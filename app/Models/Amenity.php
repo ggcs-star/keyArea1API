@@ -22,12 +22,7 @@ class Amenity extends Model
         'status',
     ];
 
-    protected $casts = [
-        'meta_data'  => 'array',
-        'status'     => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
+    
 
     public $timestamps = true;
 

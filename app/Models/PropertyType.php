@@ -26,13 +26,7 @@ class PropertyType extends Model
         'status',
     ];
 
-    protected $casts = [
-        'meta_data' => 'array',
-        'category_ids' => 'array',
-        'status' => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
+    
    
 
     protected static function boot()

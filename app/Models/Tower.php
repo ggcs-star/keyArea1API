@@ -26,19 +26,7 @@ class Tower extends Model
         'status',
     ];
 
-    protected $casts = [
-
-        'units' => 'array',
-        'floor_designs' => 'array',
-
-        'total_floors' => 'integer',
-        'total_units' => 'integer',
-
-        'status' => 'boolean',
-
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
+   
 
     public $timestamps = true;
 

@@ -78,46 +78,7 @@ class Project extends Model
         'status',
     ];
 
-    protected $casts = [
-
-        // Arrays
-        'category_ids' => 'array',
-        'configuration_ids' => 'array',
-        'amenity_ids' => 'array',
-        'tower_ids' => 'array',
-        'property_type_ids' => 'array',
-        'unit_type_ids' => 'array',
-        'gallery_images_url' => 'array',
-        'floorPlans_images_url' => 'array',
-        'slider_image_url' => 'array',
-
-        'meta_data' => 'array',
-
-        // Numbers
-        'latitude' => 'float',
-        'longitude' => 'float',
-
-        'total_units' => 'integer',
-        'total_towers' => 'integer',
-        'total_floors' => 'integer',
-
-        'display_order' => 'integer',
-
-        // Dates
-        'possession_date' => 'datetime',
-        'launch_date' => 'datetime',
-
-        // Boolean Flags
-        'is_featured' => 'boolean',
-        'is_emerging_property' => 'boolean',
-        'is_emerging_area' => 'boolean',
-        'is_new_launch' => 'boolean',
-        'is_trending' => 'boolean',
-        'status' => 'boolean',
-
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
+   
 
     public $timestamps = true;
 
@@ -153,18 +114,42 @@ class Project extends Model
     }
 
 
-    public function amenities()
-    {
-        return Amenity::whereIn('_id', $this->amenity_ids ?? [])->get();
-    }
+    // public function amenities()
+    // {
+    //     return Amenity::whereIn('_id', $this->amenity_ids ?? [])->get();
+    // }
 
-    public function categories()
-    {
-        return Category::whereIn('_id', $this->category_ids ?? [])->get();
-    }
+    // public function categories()
+    // {
+    //     return Category::whereIn('_id', $this->category_ids ?? [])->get();
+    // }
 
    
+// ✅ Add this in Project model
 
+public function getAmenitiesDataAttribute()
+{
+    return Amenity::whereIn('_id', $this->amenity_ids ?? [])
+        ->get(['_id', 'name', 'icon_url']);
+}
+
+public function getCategoriesDataAttribute()
+{
+    return Category::whereIn('_id', $this->category_ids ?? [])
+        ->get(['_id', 'name', 'slug']);
+}
+
+public function getUnitTypesDataAttribute()
+{
+    return UnitType::whereIn('_id', $this->unit_type_ids ?? [])
+        ->get(['_id', 'name', 'slug', 'bhk']);
+}
+
+public function getPromotersDataAttribute()
+{
+    return BuilderUser::whereIn('_id', $this->promoter_ids ?? [])
+        ->get(['_id', 'name', 'email', 'phone', 'company_name', 'logo']);
+}
     public function towers()
     {
         return $this->hasMany(Tower::class, 'project_id', '_id');
