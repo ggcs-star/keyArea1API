@@ -18,7 +18,7 @@ class ProjectDetailResource extends JsonResource
         $categories = Category::whereIn('_id', $this->category_ids ?? [])->get();
 
         return [
-
+            'id' => (string) $this->_id,
             'name' => $this->name,
             'slug' => $this->slug,
             'price' => $this->price,

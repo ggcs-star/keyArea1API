@@ -374,4 +374,80 @@ class ProjectControllerV1 extends Controller
             ], 500);
         }
     }
+
+
+    public function mapProjects(Request $request)
+    {
+
+        try {
+
+            $query = Project::query();
+
+            $query->whereNotNull('latitude')
+                ->whereNotNull('longitude');
+
+            if ($request->filled('city_id')) {
+                $query->where('city_id', $request->city_id);
+            }
+
+            if ($request->filled('area_id')) {
+                $query->where('area_id', $request->area_id);
+            }
+
+            if ($request->filled('project_type')) {
+                $query->where('project_type', $request->project_type);
+            }
+
+            if ($request->filled('project_status')) {
+                $query->where('project_status', $request->project_status);
+            }
+
+            if ($request->filled('min_price')) {
+                $query->where('price', '>=', (float) $request->min_price);
+            }
+            if ($request->filled('max_price')) {
+                $query->where('price', '<=', (float) $request->max_price);
+            }
+
+            if ($request->filled('is_featured')) {
+                $query->where('is_featured', true);
+            }
+
+            $projects = $query->get();
+
+            $data = $projects->map(function ($project) {
+
+                return [
+                    'id' => (string) $project->_id,
+                    'name' => $project->name,
+                    'slug' => $project->slug,
+                    'carpet_area' => $project->carpet_area,
+                    'latitude' => (float) $project->latitude,
+                    'longitude' => (float) $project->longitude,
+                    'price' => $project->price,
+
+                    'city_name' => optional($project->city)->name,
+                    'area_name' => optional($project->area)->name,
+
+                    'project_type' => $project->project_type,
+                    'project_status' => $project->project_status,
+
+                    'cover_image' => $project->cover_image_url,
+                ];
+            });
+
+            return response()->json([
+                'status' => true,
+                'count' => $data->count(),
+                'projects' => $data->values()
+            ]);
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
