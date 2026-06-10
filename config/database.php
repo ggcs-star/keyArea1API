@@ -34,10 +34,10 @@ return [
     */
 
     'connections' => [
-                  'mongodb' => [
-    'driver'   => 'mongodb',
-    'dsn'      => env('MONGODB_DSN'),
-    'database' => env('MONGODB_DATABASE'),
+    'mongodb' => [
+    'driver' => 'mongodb',
+    'dsn' => env('MONGODB_DSN'),
+    'database' => env('MONGODB_DATABASE', 'keyarea1new'),
 ],
 
         'sqlite' => [
