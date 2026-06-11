@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use MongoDB\BSON\UTCDateTime;
-
+use App\Http\Controllers\Controller;
 class AuthController extends Controller
 {
     
