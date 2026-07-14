@@ -80,9 +80,9 @@ class ProjectControllerV1 extends Controller
             $bhk = (int) filter_var($bhk, FILTER_SANITIZE_NUMBER_INT);
 
             $unitTypeIds = UnitType::where('bhk', 'like', "%{$bhk}%")
-    ->pluck('_id')
-    ->map(fn($id) => (string) $id)
-    ->toArray();
+                ->get()
+                ->map(fn($item) => (string) $item->id)
+                ->toArray();
             // dd([
 //     'unitTypeIds' => $unitTypeIds,
 // ]);

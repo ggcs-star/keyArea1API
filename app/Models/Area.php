@@ -16,32 +16,33 @@ class Area extends Model
         'pincode',
         'latitude',
         'longitude',
+        'image',
         'status',
     ];
 
     protected $casts = [
-        'latitude'   => 'float',
-        'longitude'  => 'float',
-        'status'     => 'boolean',
+        'latitude' => 'float',
+        'longitude' => 'float',
+        'status' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
     public $timestamps = true;
 
-    /**
-     * Area belongs to State
-     */
     public function state()
     {
         return $this->belongsTo(State::class, 'state_id', '_id');
     }
 
-    /**
-     * Area belongs to City
-     */
+
     public function city()
     {
         return $this->belongsTo(City::class, 'city_id', '_id');
+    }
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class, 'area_id', '_id');
     }
 }
