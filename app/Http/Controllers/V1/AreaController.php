@@ -9,14 +9,14 @@ use App\Formatters\ProjectFormatter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-
+use App\Models\City;
+use App\Models\State;
 class AreaController extends Controller
 {
 
-    private function paginateCollection($items, $perPage = 10)
+   private function paginateCollection($items, $perPage = 10)
     {
         $page = request()->get('page', 1);
-
         $items = collect($items)->values();
 
         return new LengthAwarePaginator(
@@ -24,7 +24,10 @@ class AreaController extends Controller
             $items->count(),
             $perPage,
             $page,
-            ['path' => request()->url()]
+            [
+                'path' => request()->url(),
+                'query' => request()->query(), 
+            ]
         );
     }
 
@@ -32,16 +35,55 @@ class AreaController extends Controller
     {
         try {
             $perPage = $request->get('per_page', 10);
+            $searchKeyword = trim($request->get('search'));
 
-            $areas = Area::with([
+            $query = Area::with([
                 'state:id,name',
                 'city:id,name',
-                'projects' => function ($query) {
-                    $query->select('_id', 'area_id');
+                'projects' => function ($q) {
+                    $q->select('_id', 'area_id');
                 }
-            ])
-                ->where('status', true)
-                ->get();
+            ])->where('status', true);
+
+            if (!empty($searchKeyword)) {
+
+                $normalSearch = "%{$searchKeyword}%";
+
+                $chars = preg_split('//u', str_replace(' ', '', $searchKeyword), -1, PREG_SPLIT_NO_EMPTY);
+                $fuzzySearch = '%' . implode('%', $chars) . '%';
+
+                $stateIds = State::where('name', 'like', $normalSearch)
+                    ->orWhere('name', 'like', $fuzzySearch)
+                    ->pluck('id')
+                    ->filter()
+                    ->toArray();
+
+                $cityIds = City::where('name', 'like', $normalSearch)
+                    ->orWhere('name', 'like', $fuzzySearch)
+                    ->pluck('id')
+                    ->filter()
+                    ->toArray();
+                // dd([
+//     'Search Keyword' => $searchKeyword,
+//     'Found State IDs' => $stateIds,
+//     'Found City IDs' => $cityIds
+// ]);
+                // 3. Apply main query
+                $query->where(function ($q) use ($normalSearch, $fuzzySearch, $stateIds, $cityIds) {
+                    $q->where('name', 'like', $normalSearch)
+                        ->orWhere('name', 'like', $fuzzySearch);
+
+                    if (!empty($stateIds)) {
+                        $q->orWhereIn('state_id', $stateIds);
+                    }
+
+                    if (!empty($cityIds)) {
+                        $q->orWhereIn('city_id', $cityIds);
+                    }
+                });
+            }
+
+            $areas = $query->get();
 
             $areas->each(function ($area) {
                 $area->projects_count = $area->projects ? $area->projects->count() : 0;
@@ -54,7 +96,6 @@ class AreaController extends Controller
             });
 
             $sortedAreas = $areas->sortByDesc('projects_count')->values();
-
             $paginatedAreas = $this->paginateCollection($sortedAreas, $perPage);
 
             return response()->json([
