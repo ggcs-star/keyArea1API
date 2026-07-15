@@ -6,16 +6,7 @@ use App\Http\Controllers\V1\ProjectControllerV1;
 use App\Http\Controllers\V1\ProjectLeadController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\AreaController;
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -42,4 +33,6 @@ Route::prefix('v1')->middleware('throttle:30,1')->group(function () {
 
     Route::get('/landing/areas', [AreaController::class, 'getAreasWithProjectCount']);
     Route::get('/areas/{id}', [AreaController::class, 'getAreaDetails']);
+
+    Route::get('/projects', [ProjectControllerV1::class, 'getAllProjects']);
 });
