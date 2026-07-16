@@ -14,7 +14,7 @@ use App\Models\State;
 class AreaController extends Controller
 {
 
-   private function paginateCollection($items, $perPage = 10)
+    private function paginateCollection($items, $perPage = 10)
     {
         $page = request()->get('page', 1);
         $items = collect($items)->values();
@@ -26,7 +26,7 @@ class AreaController extends Controller
             $page,
             [
                 'path' => request()->url(),
-                'query' => request()->query(), 
+                'query' => request()->query(),
             ]
         );
     }
@@ -41,7 +41,8 @@ class AreaController extends Controller
                 'state:id,name',
                 'city:id,name',
                 'projects' => function ($q) {
-                    $q->select('_id', 'area_id');
+                    $q->select('_id', 'area_id')
+                        ->where('status', true);
                 }
             ])->where('status', true);
 
